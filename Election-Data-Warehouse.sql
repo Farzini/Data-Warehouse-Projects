@@ -1,4 +1,4 @@
-
+-- By Farzam Salimi
 -- Creating tables for dimensions
 
 CREATE TABLE VoterTurnout (
@@ -76,7 +76,6 @@ CREATE TABLE ElectionResults (
     FOREIGN KEY (CandidateKey) REFERENCES Candidate(CandidateKey)
 );
 
--- By Farzam Salimi
 -- Loading the data into the Fact tables
 
 INSERT INTO Location (LocationKey, State, County, Precinct)
