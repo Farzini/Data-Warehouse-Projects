@@ -1,0 +1,137 @@
+\documentclass[conference]{IEEEtran}
+
+    \usepackage[utf8]{inputenc}
+  	\usepackage[pdftex]{graphicx}
+  	\graphicspath{{../pdf/}{../jpeg/}}
+	\DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+
+	\usepackage[cmex10]{amsmath}
+	\usepackage{mathabx}
+	\usepackage{algorithmic}
+	\usepackage{array}
+	\usepackage{mdwmath}
+	\usepackage{mdwtab}
+	\usepackage{eqparbox}
+	\usepackage{url}
+	\hyphenation{op-tical net-works semi-conduc-tor}
+    \usepackage{makecell}
+    \usepackage{float}
+    \usepackage{placeins}
+    \pagenumbering{arabic}
+
+\begin{document}
+
+\title{\LARGE Instagram - Data Warehouse Implementation}
+
+% \author{\authorblockN{Leave Author List blank for your IMS2013 Summary (initial) submission.\\ IMS2013 will be rigorously enforcing the new double-blind reviewing requirements.}
+% \authorblockA{\authorrefmark{1}Leave Affiliation List blank for your Summary (initial) submission}}
+
+ \author{\authorblockN{V. Bartolomeu, N. Ivakko, F. Salimi, S. Ferreira}
+ \authorblockA{FEUP, Faculty of Engineering, University of Porto}
+ \authorblockA{Master in Data Science and Enginnering}}
+
+\maketitle
+
+\begin{abstract}
+In the context of the master study data science and engineering in artificial intelligence we deal with the topic reversarial search for two player board ganes. we analyze different search problem formulations and compare different evaluation functions for intelligent agents for playing Halma - also known as chinese checkers. \\
+We implement a game interface for human against human, human against computer and computer against computer. Primarily the Minimax algorithm is applied and tried to improve.
+\end{abstract}
+
+\IEEEoverridecommandlockouts
+\begin{keywords}
+Artificial Intelligence, Intelligent Agents, Adversarial Search, Minimax, Monte Carlo, Halma.
+\end{keywords}
+
+\IEEEpeerreviewmaketitle
+
+
+% ===================
+% # I. Introduction #
+% ===================
+
+\section{Introduction}
+
+The concept of data warehousing was first introduced in the late 1980s, as a response to the growing need for more efficient data management and analysis in large organizations. The first data warehouses were typically custom-built solutions that required significant upfront investment and expertise. However, with the advent of standardized data warehousing tools and technologies in the 1990s, the process of building and maintaining data warehouses became much more accessible and affordable.
+
+As data warehousing evolved, so did its use cases. Originally designed for reporting and analysis purposes, data warehouses have since been adapted to support a wide range of applications, including customer relationship management, supply chain management, and financial analysis. In particular, the rise of business intelligence (BI) has been a major driver of data warehouse adoption, as BI relies heavily on the availability of accurate and timely data to drive insights and inform decision-making. Nowadays, data warehouses are considered a cornerstone of modern BI infrastructure, providing a foundation for data integration, transformation, and storage that enables organizations to make data-driven decisions with confidence. \cite{kimball2013data}\cite{gartner2019magic}
+
+While data warehouses are typically associated with large-scale enterprise environments, the concepts and principles behind them can be applied in a variety of contexts, including social media platforms such as Instagram. In fact, Instagram is an excellent example of a platform that relies heavily on data warehousing to store and analyze vast amounts of user-generated content. By leveraging the power of data warehousing, Instagram is able to deliver a personalized and engaging user experience, while also providing valuable insights to businesses and advertisers who use the platform to reach their target audiences. In a university project, the principles of data warehousing can be used to build a similar platform or application that leverages the power of data to deliver a compelling user experience and drive valuable insights.
+
+Instagram was launched in 2010 by Kevin Systrom and Mike Krieger as a mobile-only photo-sharing app for iOS devices. In just two months, the app had gained one million users, and by 2012, it had over 30 million active users. In that same year, Facebook acquired Instagram for \$1 billion, and since then, the platform has continued to grow and evolve rapidly.
+
+Today, Instagram has expanded far beyond its original photo-sharing roots and includes features such as short-form videos, Stories, Reels, IGTV, and more. The platform has become an essential tool for businesses, influencers, and individuals looking to connect with others and share their content with a global audience. Instagram's growth and success can be attributed to its ability to adapt to changing user needs and preferences, as well as its dedication to user engagement and innovation. \cite{bruns2015use}
+
+\section{Project description}
+In this report we present an example use-case of data warehousing in the scope of the masters course "Data Warehouses". The project serves the purpose to apply the contents learned in the lecture and to gain practical experience in creating dimensional models for data warehouses. The choice of topic is left to each group, taking into account the following requirements: at least 10000 entries in the dataset, aggregated facts or snapshots with at least one semi-additive measure, and at least four dimensions. The dimensions should include a temporal dimension as well as be common to both facts.
+
+As already indicated in the introduction, our project choice falls on Instagram, or rather Instagram posts and their metadata. According to a report by Statista, as of 2019, the largest age group of Instagram users in the United States were between the ages of 25 and 34, making up approximately 33.1\% of the platform's user base. The second-largest age group was between 18 and 24 years old, with 22.7\% of Instagram users falling within that range. Users aged 35 to 44 made up 18.8\% of the platform's user base, while those aged 45 to 54 made up 9.9\%. Users over 55 years old represented just 5.1\% of Instagram's users in the United States \cite{Statista2021}.
+
+In order to make this report understandable for all ages, we would first like to provide a brief overview of Instagram's functionalities. The process of using Instagram typically begins with creating an account, which requires a unique username and password. Once an account is created, users can choose to make their profile public or private. Private profiles require users to approve follower requests, while public profiles allow anyone to follow and view the user's content. After creating an account on Instagram, users can also add additional information to their profile, such as a description and their first and last name. This information can help other users find and connect with them on the platform. Additionally, users can add a profile picture to help personalize their account and make it more easily recognizable to others
+Users can follow other accounts and gain followers themselves, building a network of connections and expanding their reach on the platform. Instagram allows users to post various types of content, including photos, videos, and short-form content like Reels. Each post can be accompanied by a caption, location tag, and hashtags, which can help increase visibility and engagement.
+Users can engage with each other's content by leaving comments and likes, creating a sense of community and connection on the platform. 
+
+\section{Dataset}
+We have selected a dataset for our project that is readily accessible on the popular data science platform Kaggle. This particular dataset is available for free and can be downloaded without any additional costs or restrictions \cite{shmalex-instagram-dataset}. The dataset is split into three csv files: 
+\begin{itemize}
+    \item instagram\_locations.csv
+    \item instagram\_posts.csv
+    \item instagram\_profiles.csv
+\end{itemize}
+The raw data contained about 42 million posts, linked to 1.2 million locations and 4.5 million profiles.
+\\
+\subsubsection{Locations}
+The locations file that is included in the Instagram dataset is a comprehensive and detailed dataset that contains a wealth of information about various locations around the world. With 23 columns, this dataset allows for granular exploration of location data, providing information at different levels of detail. Each location entry can include a wide range of information, such as the name of the location, street name, zip code, city, region, and country. Additionally, every location in the dataset is assigned a unique ID, making it easy to track and identify specific locations.
+
+The dataset also includes a number of additional metadata fields, such as URLs, GPS coordinates, and timestamps indicating when the location was visited. This allows for even deeper analysis and exploration of the location data, providing insights into how and when people interact with different locations. It's worth noting that Instagram's location tagging feature is highly adaptable, and can be used to suit a wide range of use cases and scenarios. This includes the ability to create custom or personalized location tags, such as "my bed" or "favorite coffee shop", which can provide a fun and creative way for users to interact with the platform. It should be emphasized here that locations do not have to be described in their full precision.
+\\
+\subsubsection{Posts}
+The posts file in our Instagram dataset is a valuable resource for analyzing user-generated content on the platform. It contains 10 columns, with each row representing a unique post uploaded by a user. 
+In addition to a unique post ID, the file also includes a profile ID, which identifies the user who created the post. This information can be useful for identifying patterns in posting behavior and preferences across different user groups. Furthermore, the timestamp of when the post was created is also provided, allowing for analysis of post frequency and timing.
+Other available metadata in the posts file includes the type of post (1: Photo, 2: Video, 3: Multi), which can be helpful in understanding user preferences for different types of content, as well as the number of likes and comments that each post has received. These metrics provide valuable insights into post engagement and user behavior on the platform, and can be used to inform marketing and engagement strategies for businesses and individuals alike.
+\\
+\subsubsection{Profiles}
+The dataset that includes profiles has a total of 11 columns. Each profile is identified with a unique profile ID, which is crucial for easy identification and tracking. The columns contain several fields of information, including a description and full name, which are not mandatory. Additionally, the dataset provides the number of followers, followed profiles, and the number of posts for each profile. Notably, the dataset also differentiates business accounts from personal accounts, and this information is included in the dataset as well. A business account is one that represents a company or an organization, while a personal account belongs to an individual user. Moreover, the dataset includes a timestamp for each entry, indicating the time when the profile's data was recorded. This timestamp enables researchers to track changes in the profile's information and analyze trends over time.
+
+\subsection{Preparation and Insights}
+As mentioned previously, the profiles and posts included in the dataset may contain optional fields, such as a location that may only have country information or just a street name. To streamline the data ingestion process, only posts that have complete information were selected for inclusion in the dataset. This means that each post entry in the dataset must contain information about its location, among other details.
+In the next step, a dimensional model of a data warehouse will be created using the selected posts. To ensure consistency and accuracy in the model, only the profiles that belong to these cleaned post entries will be used. This will enable the data warehouse to provide meaningful insights into the relationships between posts and profiles, allowing for more effective analysis and decision-making. By carefully selecting the most relevant and complete data, the dimensional model will be optimized for efficient and accurate reporting.
+Contrary to initial assumptions, the profiles dataset does not track the evolution of profiles over time. Instead, it provides a snapshot of each profile at a specific point in time. However, it's worth noting that some profiles appear multiple times in the dataset, with around 120 insignificant duplicates or more. These duplicates often occur within milliseconds of each other, suggesting that a web crawler may have been used to collect the data.
+Although there are only a few instances where changes in the number of followers or followed profiles can be observed, they may be a result of initial wrong recordings or the use of bots to make a profile appear to have a higher reach. In such cases, it's difficult to determine the validity of the data, and caution must be exercised when interpreting these results.
+To avoid duplicate recordings in our use case, we have adopted a strategy whereby the record with the most followers is selected from a duplicate entry, provided that a change in the number of followers is observed. This approach allows us to streamline the dataset and eliminate redundant entries, while ensuring that the most accurate and up-to-date information is used in our analysis. By taking this approach, we can confidently draw conclusions from the data and generate insights that drive informed decision-making.
+
+\section{Data Warehouse Design}
+When designing the data warehouse, we utilized a dimensional bus matrix, which helped to ensure that the data warehouse was scalable, adaptable, and could meet the evolving needs of the organization. Specifically, we developed a data mart that was focused on profile analysis, including insights into posting patterns and overall high usage times on Instagram.
+\\
+\subsubsection{Data Mart}
+The first step involved identifying the business requirements and user needs, ensuring that the data mart would deliver value and actionable insights to the organization. Instagram is known for its large-scale infrastructure, and it uses Kubernetes to manage its containerized workloads and services. Kubernetes is used to deploy and manage microservices, which allows Instagram to scale its services rapidly and efficiently. With Kubernetes, Instagram can manage its applications in a distributed computing environment, ensuring high availability and scalability. Instagram's use of Kubernetes is just one example of how modern technologies are being used to power social media platforms \cite{Janakiram:2019}
+Based on the data provided, a data mart has been designed to analyze the posting patterns of Instagram profiles and the overall computation demands of the platform. This analysis will provide valuable insights into how profiles use the platform and how the platform performs under different workloads. Such insights can be useful for businesses and organizations that want to optimize their presence on Instagram, as well as for Instagram itself to improve its services.
+In addition, the analysis can also help in making decisions about whether to move to a scalable cloud environment or not. For example, if the analysis reveals that the computation demands on Instagram are consistently high and cannot be met with on-premises infrastructure, then a move to a scalable cloud environment may be justified. On the other hand, if the analysis shows that the computation demands are within manageable limits, then the cost of migrating to the cloud may not be worth it.
+\\
+\subsubsection{Fact Table Granularity}
+In the data mart for our social media platform, we have two fact tables: 'post' and 'statistics'. The 'post' table stores transactional data related to user posts, including dimensions such as time, date, location, and profile. To enable efficient querying, we split the timestamp into separate date and time components. By separating profile information from the transactional data, we can optimize the data mart for profile analysis, allowing for detailed examination of posting patterns, follower count, and other characteristics. Therefore, we will store profile information separately in the data mart. The 'statistics' table aggregates facts related to profiles, such as total number of comments or likes achieved on all posts. It is linked to the dimensions of profile, date, and time, allowing for more comprehensive analysis of overall profile performance. By using both the 'post' and 'statistics' fact tables, we can gain valuable insights into user behavior and optimize our social media platform accordingly.
+\\
+\subsubsection{Dimensions}
+Cloud application pricing has become increasingly granular, with some providers offering per-second or even per-millisecond billing for resource usage. This level of precision in pricing enables customers to closely track and manage their cloud costs and can result in significant cost savings for applications with highly variable or unpredictable usage patterns \cite{alizadeh2018chameleon}. Therefore, we have chosen to use a time granularity of seconds. For more abstract analysis, additional attributes such as daytime and nighttime flags will be added. 
+
+In addition to traditional date formats, weekday information can be considered relevant, as certain days such as Fridays may have higher posting rates than Tuesdays.
+In terms of location, an exact GPS point will not be utilized, and instead, different levels from country to zip code will provide meaningful information about geographical usage distribution. However, many location tags contain null values across different columns. Therefore, for the proof of concept, we will select a granularity from country, region, down to  street, depending on what information is available, and assign each level with unique keys.
+
+The profile dimension of the data mart stores the metadata related to profiles, which includes user id, profile name, description, first and last name, and URL. However, it should be noted that not all information may be available for every profile, except for the user id and name. Therefore, the granularity of the profile dimension is limited to these essential fields.
+
+\\
+\subsection{The Facts}
+The project necessitates the inclusion of both aggregated and semi-additive facts. The posts fact table serves as a repository for pertinent information and facts, functioning as a type of transactional table. Alongside posts metadata such as time, date, and location, additive facts such as the number of likes and comments are also stored. By utilizing the fact of post type, it will be possible to conduct trend analysis and determine which types of posts tend to generate more comments and likes, as well as predict the development of post types.
+
+The statistics fact table is designed to collect profile-specific information at a specific time and date. This table functions as a snapshot table, and unfortunately, as previously mentioned, profile trend analysis will not be feasible. As a result, this snapshot table will only contain one record for each profile. In addition to the profile and timestamp data, the aggregated facts of the total number of comments and likes, as well as followers and followings, are stored.
+
+The profile fact table and profile dimension have a "description" attribute, which may contain hashtags, emojis, and general post and profile descriptions, respectively. Furthermore, analyzing the impact of descriptions containing particular buzzwords and emojis on interactions may assist in predicting interactions, but this is beyond the scope of this particular data mart.
+
+\section{Querying and Analysis}
+
+\section{Conclusion}
+
+
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,biblio_traps_dynamics}
+
+\end{document}
